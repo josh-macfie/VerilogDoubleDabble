@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module BCDConvert(
+module bcd(
     input           clk,
     input           en,
     input   [11:0]  bin_d_in,
@@ -40,6 +40,7 @@ module BCDConvert(
     reg [2:0]   state       = 0;
     reg         busy        = 0;
     reg [3:0]   sh_counter  = 0;
+    reg [1:0]   add_counter = 0;
     reg         result_rdy  = 0;
     
     
@@ -71,28 +72,44 @@ module BCDConvert(
             ADD:
                 begin
                 
-                if(bcd_data[15:12] > 4)
-                    begin
-                        bcd_data[27:12] <= bcd_data[27:12] + 3;
-                    end
-                
-                if(bcd_data[19:16] > 4)
-                    begin
-                        bcd_data[27:16] <= bcd_data[27:16] + 3;
-                    end
-
-                if(bcd_data[23:20] > 4)
-                    begin
-                        bcd_data[27:20] <= bcd_data[27:20] + 3;
-                    end
-
-                if(bcd_data[27:24] > 4)
-                    begin
-                        bcd_data[27:24] <= bcd_data[27:24] + 3;
-                    end
-
-                state   <= SHIFT;
-
+                case(add_counter)
+                    0:
+                        begin
+                        if(bcd_data[15:12] > 4)
+                            begin
+                                bcd_data[27:12] <= bcd_data[27:12] + 3;
+                            end
+                            add_counter <= add_counter + 1;
+                        end
+                    
+                    1:
+                        begin
+                        if(bcd_data[19:16] > 4)
+                            begin
+                                bcd_data[27:16] <= bcd_data[27:16] + 3;
+                            end
+                            add_counter <= add_counter + 1;
+                        end
+                        
+                    2:
+                        begin
+                        if((add_counter == 2) && (bcd_data[23:20] > 4))
+                            begin
+                                bcd_data[27:20] <= bcd_data[27:20] + 3;
+                            end
+                            add_counter <= add_counter + 1;
+                        end
+                        
+                    3:
+                        begin
+                        if((add_counter == 3) && (bcd_data[27:24] > 4))
+                            begin
+                                bcd_data[27:24] <= bcd_data[27:24] + 3;
+                            end
+                            add_counter <= 0;
+                            state   <= SHIFT;
+                        end
+                    endcase
                 end
                 
             SHIFT:
