@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module bcd(
+module BCDConvert(
     input           clk,
     input           en,
     input   [11:0]  bin_d_in,
