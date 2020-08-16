@@ -35,7 +35,7 @@ wire rdy;
 
 //Instantiate in the same order as your module decleration.
 //I personally copy straight from the module that will be instantiated and just edit it.
-bcd BCD_uut(
+BCDConvert BCD_uut(
     .clk(clk),
     .en(en),
     .bin_d_in(bin_d_in),
